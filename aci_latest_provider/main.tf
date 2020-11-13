@@ -137,7 +137,7 @@ resource "aci_l3_outside" "l3_out1" {
 	name           = "grape_l3out"
 	annotation     = "tag_l3out"
 	# if you want to give it a pretty name
-	#name_alias     = "alias_out"
+	name_alias     = "alias_out"
 	target_dscp    = "unspecified"
 }
 
