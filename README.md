@@ -22,7 +22,15 @@ Its a topic in it's own right.
 
 ## Get Terraform
 
-Download terraform [here](https://www.terraform.io/downloads.html)
+Download terraform [here](https://www.terraform.io/downloads.html).
+
+Note it is a single binary, so you may need to declare the path where
+you run it e.g.
+
+```powershell
+.\terraform.exe init
+.\terraform.exe plan
+```
 
 ## Text Editor
 
