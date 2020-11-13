@@ -14,7 +14,6 @@ variable "bd_name_grape" {
     default = "grapefruit-bd1"
 }
 
-
 variable "bd_subnet_grape_ipnet" {
 	default = "10.254.254.1/24" 
 }
