@@ -25,18 +25,33 @@ resource "aci_vrf" "workshop1_vrf1" {
 }
 
 /*
-	This section relates to creation of a bridge domains
+	This section relates to creation of a bridge domains and subnets
 */
+
+### DYNAMIC CONFIGURATION NETWORKS ###
 resource "aci_bridge_domain" "dynamic_services_bd1" {
 	tenant_dn          = aci_tenant.workshop1_tnt.id
 	relation_fv_rs_ctx = aci_vrf.workshop1_vrf1.id
 	name               = "dynamic_services_bd1"
 }
 
+resource "aci_subnet" "dynamic_services_sn1" {
+	parent_dn 	 = aci_bridge_domain.dynamic_services_bd1.id
+  description  = "Dynamically provisioned services subnet"
+	ip           = "172.31.1.1/24"
+}
+
+### FIXED CONFIGURATION NETWORKS ###
 resource "aci_bridge_domain" "fixed_services_bd1" {
 	tenant_dn          = aci_tenant.workshop1_tnt.id
 	relation_fv_rs_ctx = aci_vrf.workshop1_vrf1.id
 	name               = "fixed_services_bd1"
+}
+
+resource "aci_subnet" "fixed_services_sn1" {
+	parent_dn 	 = aci_bridge_domain.fixed_services_bd1.id
+  description  = "Fixed provisioned services subnet"
+	ip           = "172.31.2.1/24"
 }
 
 /*
