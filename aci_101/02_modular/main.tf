@@ -168,14 +168,14 @@ module "security3" {
 	This section deals with contracts
 */
 
-resource "aci_contract" "t2_tcp_services" {
+resource "aci_contract" "kubernetes" {
 	tenant_dn = aci_tenant.workshop1_tnt.id
-	name      = "tcp_services"
+	name      = "kubernetes_services"
 }
 
-resource "aci_contract_subject" "t2_tcp_subject" {
-	contract_dn                  = aci_contract.t2_tcp_services.id
-	name                         = "t2_tcp_subject"
+resource "aci_contract_subject" "kubernetes" {
+	contract_dn                  = aci_contract.kubernetes.id
+	name                         = "kubernetes"
 	relation_vz_rs_subj_filt_att = [
 		module.filter_web1.id,
 		module.filter_database1.id
