@@ -15,6 +15,11 @@ resource "aci_tenant" "workshop1_tnt" {
 	description = "Terraform workshop"
 }
 
+resource "aci_tenant" "workshop2_tnt" {
+	name = "workshop2"
+	description = "Terraform workshop"
+}
+
 /*
 	This section relates to creation of a vrf
 */
