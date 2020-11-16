@@ -56,7 +56,7 @@ resource "aci_subnet" "fixed_services_sn1" {
 }
 
 /*
-	This section relates to creation of a application profile and EPG
+	This section relates to creation of application profiles and EPGs
 */
 
 ### kubernetes clusters ###
