@@ -127,7 +127,7 @@ module "database1" {
 	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
 	ap_name							= "databases"
 	epg_name						= "database1"
-	contracts_consumed	= []
+	contracts_consumed	= [ aci_contract.spike.id ]
 	contracts_provided	= []
 }
 module "database2" {
@@ -136,7 +136,7 @@ module "database2" {
 	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
 	ap_name							= "databases"
 	epg_name						= "database2"
-	contracts_consumed	= []
+	contracts_consumed	= [ aci_contract.spike.id ]
 	contracts_provided	= []
 }
 
@@ -148,7 +148,7 @@ module "gateway1" {
 	ap_name							= "gateways"
 	epg_name						= "api1"
 	contracts_consumed	= []
-	contracts_provided	= []
+	contracts_provided	= [ aci_contract.spike.id ]
 }
 module "gateway2" {
 	source 							= "./modules/epg"
@@ -156,7 +156,7 @@ module "gateway2" {
 	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
 	ap_name							= "gateways"
 	epg_name						= "servicebus1"
-	contracts_consumed	= []
+	contracts_consumed	= [ aci_contract.spike.id ]
 	contracts_provided	= []
 }
 
@@ -167,7 +167,7 @@ module "security1" {
 	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
 	ap_name							= "security"
 	epg_name						= "scan1"
-	contracts_consumed	= []
+	contracts_consumed	= [ aci_contract.spike.id ]
 	contracts_provided	= []
 }
 module "security2" {
@@ -176,7 +176,7 @@ module "security2" {
 	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
 	ap_name							= "security"
 	epg_name						= "apt1"
-	contracts_consumed	= []
+	contracts_consumed	= [ aci_contract.spike.id ]
 	contracts_provided	= []
 }
 module "security3" {
@@ -185,7 +185,7 @@ module "security3" {
 	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
 	ap_name							= "security"
 	epg_name						= "malware1"
-	contracts_consumed	= []
+	contracts_consumed	= [ aci_contract.spike.id ]
 	contracts_provided	= []
 }
 
