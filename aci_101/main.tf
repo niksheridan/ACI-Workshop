@@ -58,6 +58,7 @@ resource "aci_subnet" "fixed_services_sn1" {
 	This section relates to creation of a application profile and EPG
 */
 
+### kubernetes clusters ###
 resource "aci_application_profile" "kubernetes1" {
 	tenant_dn = aci_tenant.workshop1_tnt.id
 	name      = "kubernetes"
@@ -81,7 +82,11 @@ resource "aci_application_epg" "cluster2" {
 	#]
 }
 
+/*
+	This section relates to creation of fixed services
+*/
 
+### database services ###
 resource "aci_application_profile" "fixed_services_db" {
 	tenant_dn = aci_tenant.workshop1_tnt.id
 	name      = "databases"
