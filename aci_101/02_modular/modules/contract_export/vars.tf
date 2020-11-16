@@ -19,6 +19,16 @@ variable "tenant_destination_name" {
 }
 
 variable "contract_to_export" {
-  type = list
+  type = string
+  description = "(optional) describe your variable"
+}
+
+variable "description" {
+  type = string
+  description = "(optional) describe your variable"
+}
+
+variable "exported_contract_name" {
+  type = string
   description = "(optional) describe your variable"
 }
