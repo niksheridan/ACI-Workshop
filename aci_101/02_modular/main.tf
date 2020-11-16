@@ -12,7 +12,7 @@ provider "aci" {
 
 resource "aci_tenant" "workshop1_tnt" {
 	name = "workshop1"
-	description = "workshop1"
+	description = "Terraform workshop"
 }
 
 /*
