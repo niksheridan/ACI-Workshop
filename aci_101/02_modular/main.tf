@@ -60,27 +60,35 @@ resource "aci_subnet" "fixed_services_sn1" {
 */
 
 ### kubernetes clusters ###
-resource "aci_application_profile" "kubernetes1" {
-	tenant_dn = aci_tenant.workshop1_tnt.id
-	name      = "kubernetes"
+
+module "cluster1" {
+	source 							= "./modules/dynamic_epg"
+	tenant_id						= aci_tenant.workshop1_tnt.id
+	bd_id								=	aci_bridge_domain.dynamic_services_bd1.id
+	ap_name							= "kubernetes"
+	epg_name						= "cluster1"
+	contracts_consumed	= []
+	contracts_provided	= []
 }
-resource "aci_application_epg" "cluster1" {
-	application_profile_dn  = aci_application_profile.kubernetes1.id
-	relation_fv_rs_bd       = aci_bridge_domain.dynamic_services_bd1.id
-	name                    = "cluster1"
-	# consume a contract
-	#relation_fv_rs_cons    = [
-  #	aci_contract.web_services.id
-	#]
+
+module "cluster2" {
+	source 							= "./modules/dynamic_epg"
+	tenant_id						= aci_tenant.workshop1_tnt.id
+	bd_id								=	aci_bridge_domain.dynamic_services_bd1.id
+	ap_name							= "kubernetes"
+	epg_name						= "cluster2"
+	contracts_consumed	= []
+	contracts_provided	= []
 }
-resource "aci_application_epg" "cluster2" {
-	application_profile_dn  = aci_application_profile.kubernetes1.id
-	relation_fv_rs_bd       = aci_bridge_domain.dynamic_services_bd1.id
-	name                    = "cluster2"
-	# consume a contract
-	#relation_fv_rs_cons    = [
-  #	aci_contract.web_services.id
-	#]
+
+module "cluster3" {
+	source 							= "./modules/dynamic_epg"
+	tenant_id						= aci_tenant.workshop1_tnt.id
+	bd_id								=	aci_bridge_domain.dynamic_services_bd1.id
+	ap_name							= "kubernetes"
+	epg_name						= "cluster3"
+	contracts_consumed	= []
+	contracts_provided	= []
 }
 
 /*
@@ -88,25 +96,117 @@ resource "aci_application_epg" "cluster2" {
 */
 
 ### database services ###
-resource "aci_application_profile" "fixed_services_db" {
+module "database1" {
+	source 							= "./modules/dynamic_epg"
+	tenant_id						= aci_tenant.workshop1_tnt.id
+	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
+	ap_name							= "databases"
+	epg_name						= "database1"
+	contracts_consumed	= []
+	contracts_provided	= []
+}
+module "database2" {
+	source 							= "./modules/dynamic_epg"
+	tenant_id						= aci_tenant.workshop1_tnt.id
+	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
+	ap_name							= "databases"
+	epg_name						= "database2"
+	contracts_consumed	= []
+	contracts_provided	= []
+}
+
+### gateway services ###
+module "gateway1" {
+	source 							= "./modules/dynamic_epg"
+	tenant_id						= aci_tenant.workshop1_tnt.id
+	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
+	ap_name							= "gateways"
+	epg_name						= "api1"
+	contracts_consumed	= []
+	contracts_provided	= []
+}
+module "gateway2" {
+	source 							= "./modules/dynamic_epg"
+	tenant_id						= aci_tenant.workshop1_tnt.id
+	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
+	ap_name							= "gateways"
+	epg_name						= "servicebus1"
+	contracts_consumed	= []
+	contracts_provided	= []
+}
+
+### security services ###
+module "security1" {
+	source 							= "./modules/dynamic_epg"
+	tenant_id						= aci_tenant.workshop1_tnt.id
+	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
+	ap_name							= "security"
+	epg_name						= "scan1"
+	contracts_consumed	= []
+	contracts_provided	= []
+}
+module "security2" {
+	source 							= "./modules/dynamic_epg"
+	tenant_id						= aci_tenant.workshop1_tnt.id
+	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
+	ap_name							= "security"
+	epg_name						= "apt1"
+	contracts_consumed	= []
+	contracts_provided	= []
+}
+module "security3" {
+	source 							= "./modules/dynamic_epg"
+	tenant_id						= aci_tenant.workshop1_tnt.id
+	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
+	ap_name							= "security"
+	epg_name						= "malware1"
+	contracts_consumed	= []
+	contracts_provided	= []
+}
+
+
+
+/*
+	This section deals with contracts
+*/
+
+resource "aci_filter" "t2_allow_tcp" {
 	tenant_dn = aci_tenant.workshop1_tnt.id
-	name      = "databases"
+	name      = "allow_tcp"
 }
-resource "aci_application_epg" "database1" {
-	application_profile_dn  = aci_application_profile.fixed_services_db.id
-	relation_fv_rs_bd       = aci_bridge_domain.fixed_services_bd1.id 
-	name                    = "database1"
-	# consume a contract
-	#relation_fv_rs_cons    = [
-  #	aci_contract.web_services.id
-	#]
+resource "aci_filter" "t2_allow_icmp" {
+	tenant_dn = aci_tenant.workshop1_tnt.id
+	name      = "allow_icmp"
 }
-resource "aci_application_epg" "database2" {
-	application_profile_dn  = aci_application_profile.fixed_services_db.id
-	relation_fv_rs_bd       = aci_bridge_domain.fixed_services_bd1.id 
-	name                    = "database2"
-	# consume a contract
-	#relation_fv_rs_cons    = [
-  #	aci_contract.web_services.id
-	#]
+
+resource "aci_filter_entry" "tcp123" {
+	name        = "tcp123"
+	filter_dn   = aci_filter.t2_allow_tcp.id
+	ether_t     = "ip"
+	prot        = "tcp"
+	d_from_port = "123"
+	d_to_port 	= "123"
+	stateful    = "yes"
 }
+resource "aci_filter_entry" "t2_icmp" {
+	name        = "icmp"
+	filter_dn   = aci_filter.t2_allow_icmp.id
+	ether_t     = "ip"
+	prot        = "icmp"
+	stateful    = "yes"
+}
+
+resource "aci_contract" "t2_tcp_services" {
+	tenant_dn = aci_tenant.workshop1_tnt.id
+	name      = "tcp_services"
+}
+
+resource "aci_contract_subject" "t2_tcp_subject" {
+	contract_dn                  = aci_contract.t2_tcp_services.id
+	name                         = "t2_tcp_subject"
+	relation_vz_rs_subj_filt_att = [
+		aci_filter.t2_allow_tcp.id,
+		aci_filter.t2_allow_icmp.id
+	]
+}
+
