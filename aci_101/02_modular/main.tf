@@ -170,6 +170,12 @@ module "security3" {
 	This section deals with contracts
 */
 
+module "filter_kubernetes" {
+	source		=	"./modules/filter_tcp"
+	name			= "web"
+	tcp_port	= "80"
+}
+
 resource "aci_filter" "t2_allow_tcp" {
 	tenant_dn = aci_tenant.workshop1_tnt.id
 	name      = "allow_tcp"

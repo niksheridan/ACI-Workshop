@@ -1,13 +1,11 @@
-
-
-resource "aci_filter" "t2_allow_tcp" {
+resource "aci_filter" "filter" {
 	tenant_dn = aci_tenant.tenant2.id
-	name      = "allow_tcp"
+	name      = var.filter_name
 }
 
 resource "aci_filter_entry" "entry" {
-	name        = "tcp123"
-	filter_dn   = aci_filter.t2_allow_tcp.id
+	name        = var.filter_entry_name
+	filter_dn   = aci_filter.filter.id
 	ether_t     = "ip"
 	prot        = "tcp"
 	d_from_port = var.tcpport
