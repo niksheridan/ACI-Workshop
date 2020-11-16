@@ -236,14 +236,15 @@ resource "aci_contract_subject" "security" {
 	]
 }
 
+
 resource "aci_contract" "spike" {
 	tenant_dn = aci_tenant.workshop1_tnt.id
 	name      = "spike_services"
 }
 
-resource "aci_contract_subject" "security" {
+resource "aci_contract_subject" "spike" {
 	contract_dn                  = aci_contract.spike.id
-	name                         = "security"
+	name                         = "spike"
 	relation_vz_rs_subj_filt_att = [
 		module.filter_web1.id,
 		module.filter_database1.id
