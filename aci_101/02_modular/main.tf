@@ -236,6 +236,15 @@ resource "aci_contract_subject" "security" {
 	]
 }
 
+module "contract_export1" {
+	source = "./modules/contract_export"
+	tenant_source_id = aci_tenant.workshop1_tnt.id
+	tenant_destination_id = aci_tenant.workshop2_tnt.id
+	tenant_source_name = "workshop1"
+	tenant_destination_name = "workshop2"
+	contract_to_export = [ aci_contract.databases ]
+}
+
 /*
 	This section deals with filters
 */
