@@ -2,6 +2,9 @@
 
 ACI workshop for experimenting with open source configuration management tools
 
+Note if using a latest provider (fresh install) please use the
+syntax in the ```aci_latest_provider``` directory instead.
+
 ## Rough Guide to Git
 
 Download git [here](https://git-scm.com/downloads)

@@ -28,18 +28,12 @@ resource "aci_vrf" "vrf1" {
 	tenant_dn = aci_tenant.tenant1.id
 	name      = "grape1_vrf1"
 	annotation = "grape1"
-	#lifecycle {
-	#	prevent_destroy = true
-	#}
 }
 
 resource "aci_vrf" "vrf2" {
 	tenant_dn = aci_tenant.tenant2.id
 	name      = "grape2_vrf1"
 	annotation = "grape2"
-	#lifecycle {
-	#	prevent_destroy = true
-	#}
 }
 
 resource "aci_bridge_domain" "bd1" {
@@ -47,10 +41,11 @@ resource "aci_bridge_domain" "bd1" {
 	relation_fv_rs_ctx = aci_vrf.vrf1.id
 	name               = "grape_bd1"
 }
+
 resource "aci_subnet" "bd1_subnet1" {
-	bridge_domain_dn = aci_bridge_domain.bd1.id
-    description      = var.bd_subnet_grape_name
-	ip               = var.bd_subnet_grape_ipnet
+	parent_dn 	 = aci_bridge_domain.bd1.id
+  description  = var.bd_subnet_grape_name
+	ip           = var.bd_subnet_grape_ipnet
 }
 
 resource "aci_filter" "allow_https" {
@@ -61,6 +56,7 @@ resource "aci_filter" "allow_icmp" {
 	tenant_dn = aci_tenant.tenant1.id
 	name      = "allow_icmp"
 }
+
 
 resource "aci_filter_entry" "https" {
 	name        = "https"
@@ -79,6 +75,7 @@ resource "aci_filter_entry" "icmp" {
 	stateful    = "yes"
 }
 
+
 resource "aci_contract" "web_services" {
 	tenant_dn = aci_tenant.tenant1.id
 	name      = "Web"
@@ -88,8 +85,8 @@ resource "aci_contract_subject" "Web_subject1" {
 	contract_dn                  = aci_contract.web_services.id
 	name                         = "web_subject1"
 	relation_vz_rs_subj_filt_att = [
-		"${aci_filter.allow_https.id}",
-		"${aci_filter.allow_icmp.id}"
+		aci_filter.allow_https.id,
+		aci_filter.allow_icmp.id
 	]
 }
 
@@ -103,7 +100,7 @@ resource "aci_application_epg" "epg1" {
 	#relation_fv_rs_dom_att = ["${data.aci_vmm_domain.vds.id}"] 
 	# consume a contract
 	relation_fv_rs_cons    = [
-		"${aci_contract.web_services.id}"
+		aci_contract.web_services.id
 	]
 }
 
@@ -117,9 +114,10 @@ resource "aci_application_epg" "epg2" {
 	relation_fv_rs_bd      = aci_bridge_domain.bd1.id
 	# provide to a contract
 	relation_fv_rs_prov    = [
-		"${aci_contract.web_services.id}"
+		aci_contract.web_services.id
 	]
 }
+
 
 resource "aci_application_profile" "app3" {
 	tenant_dn = aci_tenant.tenant1.id
@@ -139,42 +137,10 @@ resource "aci_l3_outside" "l3_out1" {
 	name           = "grape_l3out"
 	annotation     = "tag_l3out"
 	# if you want to give it a pretty name
-	#name_alias     = "alias_out"
+	name_alias     = "alias_out"
 	target_dscp    = "unspecified"
 }
 
-## https://www.terraform.io/docs/providers/aci/r/vzcpif.html
-#resource "aci_imported_contract" "grape_import" {
-#
-#  #tenant_dn  = "${aci_tenant.tenant2.id}"
-#
-#  #name  = "gp1_web"
-#  #annotation  = "Web"
-#  #name_alias  = "Web"
-#}
-
-## aci_imported_contract.grape0_import:
-#resource "aci_imported_contract" "grape0_import" {
-#    annotation = "Web"
-#    id         = "uni/tn-grapefruit2/cif-Web"
-#    name       = "Web"
-#    name_alias = "Web"
-#}
-
-# aci_imported_contract.grape_import:
-# https://www.terraform.io/docs/providers/aci/r/vzcpif.html
-#resource "aci_imported_contract" "grape_import" {
-#    #id   = "uni/tn-grapefruit2/cif-gp1_web"
-#    tenant_dn  = aci_tenant.tenant2.id
-#    name = "gp1_web"
-#}
-
-
-#resource "aci_imported_contract" "grape_real" {
-#    #id   = "uni/tn-grapefruit2/cif-gp1_web"
-#    tenant_dn  = aci_tenant.tenant2.id
-#    name = "real_exported_web"
-#}
 
 resource "aci_application_profile" "app4" {
 	tenant_dn = aci_tenant.tenant2.id
@@ -189,7 +155,6 @@ resource "aci_application_epg" "epg4" {
 	#	"${aci_contract.web_services.id}"
 	#]
 }
-
 
 
 
@@ -232,24 +197,10 @@ resource "aci_contract_subject" "t2_tcp_subject" {
 	contract_dn                  = aci_contract.t2_tcp_services.id
 	name                         = "t2_tcp_subject"
 	relation_vz_rs_subj_filt_att = [
-		"${aci_filter.t2_allow_tcp.id}",
-		"${aci_filter.t2_allow_icmp.id}"
+		aci_filter.t2_allow_tcp.id,
+		aci_filter.t2_allow_icmp.id
 	]
 }
-
-
-#data "aci_imported_contract" "t1_contract" {
-#	name  	= "exported_contract1"
-#	##id 		= "uni/tn-grapefruit1/brc-Web"
-#	#target_dn = "uni/tn-grapefruit2/cif-banana"
-#}
-
-
-#resource "aci_imported_contract" "banana" {
-#    #id   = "uni/tn-grapefruit2/cif-gp1_web"
-#    tenant_dn  = aci_tenant.tenant2.id
-#    name = "banana"
-#}
 
 # note the payload must align to the left with no indent
 resource "aci_rest" "banana1" {
@@ -259,32 +210,32 @@ resource "aci_rest" "banana1" {
 	]
     payload = <<EOF
 {
-    "imdata": [
-        {
-            "vzCPIf": {
-                "attributes": {
-                    "annotation": "",
-                    "descr": "this contract is a banana",
-                    "dn": "uni/tn-grapefruit2/cif-exported_contact",
-                    "name": "exported_contact",
-                    "nameAlias": "",
-                    "ownerKey": "",
-                    "ownerTag": ""
-                },
-                "children": [
-                    {
-                        "vzRsIf": {
-                            "attributes": {
-                                "annotation": "",
-                                "prio": "unspecified",
-                                "tDn": "uni/tn-grapefruit1/brc-Web"
-                            }
-                        }
-                    }
-                ]
-            }
-        }
-    ]
+  "imdata": [
+		{
+		"vzCPIf": {
+			"attributes": {
+					"annotation": "",
+					"descr": "this contract is a banana",
+					"dn": "uni/tn-grapefruit2/cif-exported_contact",
+					"name": "exported_contact",
+					"nameAlias": "",
+					"ownerKey": "",
+					"ownerTag": ""
+				},
+				"children": [
+					{
+						"vzRsIf": {
+							"attributes": {
+								"annotation": "",
+								"prio": "unspecified",
+								"tDn": "uni/tn-grapefruit1/brc-Web"
+							}
+						}
+					}
+				]
+			}
+		}
+  ]
 }
 	EOF
 }
