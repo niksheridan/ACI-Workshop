@@ -236,6 +236,7 @@ resource "aci_contract_subject" "security" {
 	]
 }
 
+# May be helpful to include this in a contract module 
 module "contract_export1" {
 	source = "./modules/contract_export"
 	exported_contract_name = "database_contract"
