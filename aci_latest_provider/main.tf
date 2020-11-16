@@ -10,7 +10,7 @@ provider "aci" {
 	Some generic comment
 */
 resource "aci_tenant" "tenant1" {
-	name = "grapefruit1"
+	name = "grapefruit3"
 	description = var.tenant1_grape1
 	#lifecycle {
 	#	prevent_destroy = true
