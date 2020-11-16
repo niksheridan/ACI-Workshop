@@ -62,7 +62,7 @@ resource "aci_subnet" "fixed_services_sn1" {
 ### kubernetes clusters ###
 
 module "cluster1" {
-	source 							= "./modules/dynamic_epg"
+	source 							= "./modules/epg"
 	tenant_id						= aci_tenant.workshop1_tnt.id
 	bd_id								=	aci_bridge_domain.dynamic_services_bd1.id
 	ap_name							= "kubernetes"
@@ -72,7 +72,7 @@ module "cluster1" {
 }
 
 module "cluster2" {
-	source 							= "./modules/dynamic_epg"
+	source 							= "./modules/epg"
 	tenant_id						= aci_tenant.workshop1_tnt.id
 	bd_id								=	aci_bridge_domain.dynamic_services_bd1.id
 	ap_name							= "kubernetes"
@@ -82,7 +82,7 @@ module "cluster2" {
 }
 
 module "cluster3" {
-	source 							= "./modules/dynamic_epg"
+	source 							= "./modules/epg"
 	tenant_id						= aci_tenant.workshop1_tnt.id
 	bd_id								=	aci_bridge_domain.dynamic_services_bd1.id
 	ap_name							= "kubernetes"
@@ -97,7 +97,7 @@ module "cluster3" {
 
 ### database services ###
 module "database1" {
-	source 							= "./modules/dynamic_epg"
+	source 							= "./modules/epg"
 	tenant_id						= aci_tenant.workshop1_tnt.id
 	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
 	ap_name							= "databases"
@@ -106,7 +106,7 @@ module "database1" {
 	contracts_provided	= []
 }
 module "database2" {
-	source 							= "./modules/dynamic_epg"
+	source 							= "./modules/epg"
 	tenant_id						= aci_tenant.workshop1_tnt.id
 	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
 	ap_name							= "databases"
@@ -117,7 +117,7 @@ module "database2" {
 
 ### gateway services ###
 module "gateway1" {
-	source 							= "./modules/dynamic_epg"
+	source 							= "./modules/epg"
 	tenant_id						= aci_tenant.workshop1_tnt.id
 	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
 	ap_name							= "gateways"
@@ -126,7 +126,7 @@ module "gateway1" {
 	contracts_provided	= []
 }
 module "gateway2" {
-	source 							= "./modules/dynamic_epg"
+	source 							= "./modules/epg"
 	tenant_id						= aci_tenant.workshop1_tnt.id
 	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
 	ap_name							= "gateways"
@@ -137,7 +137,7 @@ module "gateway2" {
 
 ### security services ###
 module "security1" {
-	source 							= "./modules/dynamic_epg"
+	source 							= "./modules/epg"
 	tenant_id						= aci_tenant.workshop1_tnt.id
 	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
 	ap_name							= "security"
@@ -146,7 +146,7 @@ module "security1" {
 	contracts_provided	= []
 }
 module "security2" {
-	source 							= "./modules/dynamic_epg"
+	source 							= "./modules/epg"
 	tenant_id						= aci_tenant.workshop1_tnt.id
 	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
 	ap_name							= "security"
@@ -155,7 +155,7 @@ module "security2" {
 	contracts_provided	= []
 }
 module "security3" {
-	source 							= "./modules/dynamic_epg"
+	source 							= "./modules/epg"
 	tenant_id						= aci_tenant.workshop1_tnt.id
 	bd_id								=	aci_bridge_domain.fixed_services_bd1.id
 	ap_name							= "security"
@@ -164,43 +164,9 @@ module "security3" {
 	contracts_provided	= []
 }
 
-
-
 /*
 	This section deals with contracts
 */
-
-module "filter_kubernetes" {
-	source		=	"./modules/filter_tcp"
-	name			= "web"
-	tcp_port	= "80"
-}
-
-resource "aci_filter" "t2_allow_tcp" {
-	tenant_dn = aci_tenant.workshop1_tnt.id
-	name      = "allow_tcp"
-}
-resource "aci_filter" "t2_allow_icmp" {
-	tenant_dn = aci_tenant.workshop1_tnt.id
-	name      = "allow_icmp"
-}
-
-resource "aci_filter_entry" "tcp123" {
-	name        = "tcp123"
-	filter_dn   = aci_filter.t2_allow_tcp.id
-	ether_t     = "ip"
-	prot        = "tcp"
-	d_from_port = "123"
-	d_to_port 	= "123"
-	stateful    = "yes"
-}
-resource "aci_filter_entry" "t2_icmp" {
-	name        = "icmp"
-	filter_dn   = aci_filter.t2_allow_icmp.id
-	ether_t     = "ip"
-	prot        = "icmp"
-	stateful    = "yes"
-}
 
 resource "aci_contract" "t2_tcp_services" {
 	tenant_dn = aci_tenant.workshop1_tnt.id
@@ -211,8 +177,53 @@ resource "aci_contract_subject" "t2_tcp_subject" {
 	contract_dn                  = aci_contract.t2_tcp_services.id
 	name                         = "t2_tcp_subject"
 	relation_vz_rs_subj_filt_att = [
-		aci_filter.t2_allow_tcp.id,
-		aci_filter.t2_allow_icmp.id
+		module.filter_web1.id
 	]
 }
+
+
+
+
+/*
+	This section deals with filters
+*/
+
+module "filter_web1" {
+	source							=	"./modules/filter_tcp"
+	tenant_id						= aci_tenant.workshop1_tnt.id
+	filter_name 				= "web"
+	filter_description 	= "Web filter"
+	filter_entry_name 	= "http"
+	tcp_port						= "80"
+}
+
+module "filter_web2" {
+	source							=	"./modules/filter_tcp"
+	tenant_id						= aci_tenant.workshop1_tnt.id
+	filter_name 				= "web"
+	filter_description 	= "Web filter"
+	filter_entry_name 	= "https"
+	tcp_port						= "443"
+}
+
+
+module "filter_database1" {
+	source							=	"./modules/filter_tcp"
+	tenant_id						= aci_tenant.workshop1_tnt.id
+	filter_name 				= "database"
+	filter_description 	= "database filter"
+	filter_entry_name 	= "sql"
+	tcp_port						= "1521"
+}
+
+module "filter_database2" {
+	source							=	"./modules/filter_tcp"
+	tenant_id						= aci_tenant.workshop1_tnt.id
+	filter_name 				= "database"
+	filter_description 	= "database filter"
+	filter_entry_name 	= "sql2"
+	tcp_port						= "1121"
+}
+
+
 
