@@ -236,16 +236,30 @@ resource "aci_contract_subject" "security" {
 	]
 }
 
+resource "aci_contract" "spike" {
+	tenant_dn = aci_tenant.workshop1_tnt.id
+	name      = "spike_services"
+}
+
+resource "aci_contract_subject" "security" {
+	contract_dn                  = aci_contract.spike.id
+	name                         = "security"
+	relation_vz_rs_subj_filt_att = [
+		module.filter_web1.id,
+		module.filter_database1.id
+	]
+}
+
 # May be helpful to include this in a contract module 
 module "contract_export1" {
 	source = "./modules/contract_export"
-	exported_contract_name = "database_contract"
+	exported_contract_name = "spike_contract"
 	description = "exported contract from workshop 1"
 	tenant_source_id = aci_tenant.workshop1_tnt.id
 	tenant_destination_id = aci_tenant.workshop2_tnt.id
 	tenant_source_name = "workshop1"
 	tenant_destination_name = "workshop2"
-	contract_to_export = aci_contract.databases.name
+	contract_to_export = aci_contract.spike.name
 }
 
 /*
