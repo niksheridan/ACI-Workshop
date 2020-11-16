@@ -177,11 +177,10 @@ resource "aci_contract_subject" "t2_tcp_subject" {
 	contract_dn                  = aci_contract.t2_tcp_services.id
 	name                         = "t2_tcp_subject"
 	relation_vz_rs_subj_filt_att = [
-		module.filter_web1.id
+		module.filter_web1.id,
+		module.filter_database1.id
 	]
 }
-
-
 
 
 /*
