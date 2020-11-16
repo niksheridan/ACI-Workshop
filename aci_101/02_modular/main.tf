@@ -61,14 +61,32 @@ resource "aci_subnet" "fixed_services_sn1" {
 
 ### kubernetes clusters ###
 
+locals {
+  # stamdard contracts provided
+  kubernetes_provided_contracts = [
+      aci_contract.kubernetes.id,
+      aci_contract.databases.id
+  ]
+  # stamdard contracts consumed
+  kubernetes_consumed_contracts = [
+      aci_contract.kubernetes.id,
+      aci_contract.databases.id
+  ]
+  
+}
+
 module "cluster1" {
 	source 							= "./modules/epg"
 	tenant_id						= aci_tenant.workshop1_tnt.id
 	bd_id								=	aci_bridge_domain.dynamic_services_bd1.id
 	ap_name							= "kubernetes"
 	epg_name						= "cluster1"
-	contracts_consumed	= []
-	contracts_provided	= []
+	contracts_consumed	= local.kubernetes_consumed_contracts
+  # setunion allows another list to be appended without duplication
+	contracts_provided	= setunion(
+    local.kubernetes_provided_contracts,
+    [ aci_contract.security.id ]
+  )
 }
 
 module "cluster2" {
@@ -77,8 +95,9 @@ module "cluster2" {
 	bd_id								=	aci_bridge_domain.dynamic_services_bd1.id
 	ap_name							= "kubernetes"
 	epg_name						= "cluster2"
-	contracts_consumed	= []
-	contracts_provided	= []
+	contracts_consumed	= local.kubernetes_consumed_contracts
+	contracts_provided	= local.kubernetes_provided_contracts
+
 }
 
 module "cluster3" {
@@ -87,8 +106,9 @@ module "cluster3" {
 	bd_id								=	aci_bridge_domain.dynamic_services_bd1.id
 	ap_name							= "kubernetes"
 	epg_name						= "cluster3"
-	contracts_consumed	= []
-	contracts_provided	= []
+	contracts_consumed	= local.kubernetes_consumed_contracts
+	contracts_provided	= local.kubernetes_provided_contracts
+
 }
 
 /*
@@ -197,6 +217,19 @@ resource "aci_contract_subject" "databases" {
 }
 
 
+resource "aci_contract" "security" {
+	tenant_dn = aci_tenant.workshop1_tnt.id
+	name      = "security_services"
+}
+
+resource "aci_contract_subject" "security" {
+	contract_dn                  = aci_contract.security.id
+	name                         = "security"
+	relation_vz_rs_subj_filt_att = [
+		module.filter_web1.id,
+		module.filter_database1.id
+	]
+}
 
 /*
 	This section deals with filters
