@@ -1,3 +1,3 @@
 # ACI 101 Workshop
 
-This is some text
+Basics to cover off every day changes that are believed to be useful
