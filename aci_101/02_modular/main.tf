@@ -182,6 +182,21 @@ resource "aci_contract_subject" "kubernetes" {
 	]
 }
 
+resource "aci_contract" "databases" {
+	tenant_dn = aci_tenant.workshop1_tnt.id
+	name      = "database_services"
+}
+
+resource "aci_contract_subject" "databases" {
+	contract_dn                  = aci_contract.databases.id
+	name                         = "databases"
+	relation_vz_rs_subj_filt_att = [
+		module.filter_web1.id,
+		module.filter_database1.id
+	]
+}
+
+
 
 /*
 	This section deals with filters
