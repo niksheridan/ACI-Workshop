@@ -121,6 +121,38 @@ module "cluster3" {
 /*
 	This section relates to creation of fixed services
 */
+### Business App ###
+
+module "biz_presentation1" {
+  source              = "./modules/epg"
+  tenant_id           = aci_tenant.workshop1_tnt.id
+  bd_id               = aci_bridge_domain.fixed_services_bd1.id
+  ap_name             = "biz-stack1"
+  epg_name            = "biz-presentation1"
+  contracts_consumed  = [ aci_contract.spike.id ]
+  contracts_provided  = []
+}
+
+module "biz_application1" {
+  source              = "./modules/epg"
+  tenant_id           = aci_tenant.workshop1_tnt.id
+  bd_id               = aci_bridge_domain.fixed_services_bd1.id
+  ap_name             = "biz-stack1"
+  epg_name            = "biz-application1"
+  contracts_consumed  = [ aci_contract.spike.id ]
+  contracts_provided  = []
+}
+
+module "biz_database2" {
+  source              = "./modules/epg"
+  tenant_id           = aci_tenant.workshop1_tnt.id
+  bd_id               = aci_bridge_domain.fixed_services_bd1.id
+  ap_name             = "biz-stack1"
+  epg_name            = "biz-database1"
+  contracts_consumed  = [ aci_contract.spike.id ]
+  contracts_provided  = []
+}
+
 
 ### database services ###
 module "database1" {
