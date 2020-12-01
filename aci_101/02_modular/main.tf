@@ -11,12 +11,12 @@ provider "aci" {
 */
 
 resource "aci_tenant" "workshop1_tnt" {
-	name = "workshop1"
+	name = "a_workshop1"
 	description = "Terraform workshop"
 }
 
 resource "aci_tenant" "workshop2_tnt" {
-	name = "workshop2"
+	name = "a_workshop2"
 	description = "Terraform workshop"
 }
 
@@ -45,6 +45,7 @@ resource "aci_subnet" "dynamic_services_sn1" {
 	parent_dn 	 = aci_bridge_domain.dynamic_services_bd1.id
   description  = "Dynamically provisioned services subnet"
 	ip           = "172.31.1.1/24"
+  scope        = ["shared","public"]
 }
 
 ### FIXED CONFIGURATION NETWORKS ###
@@ -58,6 +59,7 @@ resource "aci_subnet" "fixed_services_sn1" {
 	parent_dn 	 = aci_bridge_domain.fixed_services_bd1.id
   description  = "Fixed provisioned services subnet"
 	ip           = "172.31.2.1/24"
+  scope        = ["shared","public"]
 }
 
 /*
@@ -255,11 +257,11 @@ resource "aci_contract_subject" "spike" {
 module "contract_export1" {
 	source = "./modules/contract_export"
 	exported_contract_name = "spike_contract"
-	description = "exported contract from workshop 1"
+	description = "exported contract from workshop"
 	tenant_source_id = aci_tenant.workshop1_tnt.id
 	tenant_destination_id = aci_tenant.workshop2_tnt.id
-	tenant_source_name = "workshop1"
-	tenant_destination_name = "workshop2"
+	tenant_source_name = aci_tenant.workshop1_tnt.name
+	tenant_destination_name = aci_tenant.workshop2_tnt.name
 	contract_to_export = aci_contract.spike.name
 }
 
